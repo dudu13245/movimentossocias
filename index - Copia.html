@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conexo - Movimentos Sociais</title>
+<div id="regras" style="background:#f5f5dc; color:#1e293b; padding:20px; margin:20px auto; border-radius:8px; max-width:800px; text-align:left;">
+  <h2>Regras do Jogo</h2>
+  <p>Os jogadores recebem uma série de quatro palavras e devem identificar uma palavra ou tema que pode ser conectado a todas elas de alguma forma.</p>
+  <p>O objetivo é encontrar o <strong>tema comum</strong> ou a <strong>relação entre as palavras</strong> e chegar à resposta correta.</p>
+  <p>Você tem que formar quatro grupos de palavras relacionadas para vencer o jogo.</p>
+  <p> 1. Leia e Entenda:Comece lendo cuidadosamente as palavras dadas no quebra-cabeça. Entenda seus significados e contexto.</p>
+  <p> 2. Encontre 5 grupos de quatro palavras que compartilham algo em comum. Procure por padrões e conexões entre as palavras para formar os 5 grupos de 4 palavras cada. Cada grupo deve ter um tema comum com quatro palavras relacionadas.</p>
+  <p> 3. Selecione 4 Palavras de um conjunto. Veja se sua resposta corresponde à solução correta. Aproveite o desafio e a emoção do jogo!
+  <p style="text-align:center; margin-top:10px;">
+  <a href="dicas.html" target="_blank" style="color:#6b21a8; text-decoration:underline;">Ver dicas sobre as palavras do jogo</a>
+  <p style="text-align:center; margin-top:30px;">
+  <a href="bibliografia.html" target="_blank" style="color:#6b21a8; text-decoration:underline;">Ver Bibliografia do Jogo</a>
+  <p style="text-align:center; margin-top:20px;">
+  <a href="movimentos.html" target="_blank" style="color:#6b21a8; text-decoration:underline;">
+    Ver explicações sobre os movimentos sociais
+  </a>
+  </p>
+  </p>
+
+</div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #6b21a8;
+      color: #f1f5f9;
+      text-align: center;
+      padding: 20px;
+      transition: background-color 0.5s ease;
+    }
+    .grid, .grupo-correto {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .word {
+      border: 2px solid #334155;
+      background: #d1d5db;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      user-select: none;
+      color: black;
+    }
+    .selected {
+      background-color: #60a5fa;
+      color: white;
+    }
+    .correct {
+      background-color: #22c55e !important;
+      color: white;
+      pointer-events: none;
+    }
+    .incorrect {
+      background-color: #ef4444 !important;
+      color: white;
+      animation: shake 0.3s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .explicacoes {
+      display: none;
+      background-color: #f5f5dc;
+      color: #1e293b;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+      text-align: left;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .explicacoes h3 {
+      margin-top: 1em;
+      color: #6b21a8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Conexo: Movimentos Sociais</h1>
+  <p>Agrupe 4 palavras com algo em comum</p>
+  <div class="grid" id="grid"></div>
+  <div id="gruposCertos"></div>
+  <button onclick="verificarGrupo()">Verificar Grupo</button>
+  <div class="explicacoes" id="explicacoes">
+    <h2>Explicações:</h2>
+    <div id="conteudoExplicacoes"></div>
+  </div>
+
+  <script>
+    const palavras = [
+      { texto: "Bertha Lutz", grupo: "Movimento Feminista"},
+      { texto: "Igualdade de gênero", grupo: "Movimento Feminista"},
+      { texto: "Leolinda Daltro", grupo: "Movimento Feminista"},
+      { texto: "Maria da Penha", grupo: "Movimento Feminista"},
+
+      { texto: "Educação pública e gratuita ", grupo: "UNE" },
+      { texto: "José Talarico", grupo: "UNE" },
+      { texto: "Cacá Diegues", grupo: "UNE" },
+      { texto: "Diretas Já", grupo: "UNE" },
+
+      { texto: "Reforma Agrária Popular", grupo: "MST" },
+      { texto: "João Pedro Stédile", grupo: "MST" },
+      { texto: "Marina dos Santos", grupo: "MST" },
+      { texto: "Gilmar Mauro", grupo: "MST" },
+
+      { texto: "Milton Barbosa", grupo: "MNU" },
+      { texto: "Abdias do Nascimento", grupo: "MNU" },
+      { texto: "Lélia Gonzalez", grupo: "MNU" },
+      { texto: "Combate ao racismo estrutural", grupo: "MNU" },
+
+      { texto: "Madame Satã", grupo: "LGBTQIA+" },
+      { texto: "Igualdade de Direitos", grupo: "LGBTQIA+" },
+      { texto: "Tibira do Maranhão", grupo: "LGBTQIA+" },
+      { texto: "Erika Hilton", grupo: "LGBTQIA+" },
+    ];
+
+    const explicacoes = {
+"Movimento Feminista": [
+  "<strong>Bertha Lutz</strong>: Bertha Lutz foi uma das principais líderes do movimento sufragista no Brasil e uma das figuras mais influentes na luta pelos direitos das mulheres no século XX. Cientista formada na França e funcionária pública no Rio de Janeiro, fundou a Federação Brasileira pelo Progresso Feminino em 1922, organização que liderou a campanha pelo direito ao voto feminino. Sua atuação política foi decisiva para a conquista do voto das mulheres em 1932. Além disso, Bertha foi deputada federal e defensora da igualdade de gênero, tendo participado da elaboração de leis em favor das trabalhadoras e da educação feminina.",
+  "<strong>Igualdade de gênero</strong>: A pauta da igualdade de gênero defendida pelo movimento feminista busca garantir que mulheres e homens tenham os mesmos direitos, oportunidades e tratamento em todas as esferas da vida — política, econômica, social e cultural. Isso inclui o combate à discriminação, à violência de gênero, à desigualdade salarial, à invisibilidade das mulheres em espaços de poder e à naturalização de papéis sociais baseados em estereótipos. O movimento propõe a construção de uma sociedade mais justa e igualitária, onde as diferenças não sejam motivo de opressão, mas de respeito e equidade.",
+  "<strong>Leolinda Daltro</strong>: Leolinda Daltro foi uma educadora, enfermeira e ativista política brasileira pioneira na luta pelos direitos das mulheres no início do século XX. Em 1910, fundou o Partido Republicano Feminino, uma das primeiras organizações políticas voltadas à defesa do sufrágio feminino no Brasil. Além de sua atuação política, Leolinda também foi uma defensora dos direitos dos povos indígenas, trabalhando como professora em aldeias e promovendo a inclusão desses grupos na sociedade. Sua postura combativa e independente, em uma época de forte repressão à participação feminina na esfera pública, fez dela uma das figuras mais importantes do feminismo brasileiro na Primeira República.",
+  "<strong>Maria da Penha</strong>: Angela Davis é uma filósofa, ativista e intelectual negra norte-americana, amplamente reconhecida por suas contribuições ao feminismo, à luta antirracista e à crítica ao sistema prisional e capitalista. Embora não tenha sido uma sufragista, Davis analisa criticamente o movimento sufragista tradicional, destacando como ele muitas vezes excluiu mulheres negras e outras minorias. Sua abordagem interseccional propõe uma luta por direitos que considere, de forma integrada, as opressões de gênero, raça e classe.  "
+],
+"UNE": [
+  "<strong>Educação pública e gratuita</strong>: Uma das principais pautas da UNE (União Nacional dos Estudantes) é a defesa da educação pública, gratuita e de qualidade. A UNE luta historicamente por investimentos na escola e na universidade pública, pelo acesso democrático ao ensino superior, pela permanência estudantil (como bolsas, moradia e alimentação) e contra a privatização da educação. A entidade também atua na garantia da autonomia universitária e na valorização da ciência e da pesquisa, entendendo a educação como um direito social fundamental e um instrumento de transformação da sociedade.",
+  "<strong>José Talarico</strong>: Nascido no dia 11 de novembro de 1915, José Gomes Talarico possui uma história de militância que se mistura com a própria história política brasileira. Talarico foi aluno da Escola de Política, posteriormente Instituto de Criminologia, da Universidade de São Paulo (USP). Talarico começou sua carreira no jornalismo em 1933, na função de repórter do Correio Paulistano. Entre 1937 e 1938, trabalhou na sucursal do jornal carioca A Noite. Foi nesse período que participou da fundação da União Nacional dos Estudantes (UNE), entidade que surgia da necessidade de representação política da classe estudantil brasileira.",
+  "<strong>Cacá Diegues</strong>: Carlos José Fontes 'Cacá' Diegues OMC (Maceió, 19 de maio de 1940 – Rio de Janeiro, 14 de fevereiro de 2025) foi um roteirista, produtor, cineasta e escritor brasileiro. Um dos fundadores movimento do Cinema Novo,Estudou no Colégio Santo Inácio, dirigido por jesuítas, até ingressar na Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio), onde fez o curso de Direito. Como presidente do Diretório Estudantil, fundou um cineclube, iniciando suas atividades de cineasta amador com David Neves e Arnaldo Jabor, entre outros. Ainda estudante, dirigiu o jornal O Metropolitano, órgão oficial da União Metropolitana de Estudantes, e juntou-se ao Centro Popular de Cultura, ligado à União Nacional dos Estudantes. O grupo da PUC e o de O Metropolitano tornaram-se, a partir do final da década de 1950, um dos núcleos de fundação do Cinema Novo, do qual Diegues foi um dos líderes, juntamente com Glauber Rocha, Leon Hirszman, Paulo Cesar Saraceni e Joaquim Pedro de Andrade. Em 1961, em colaboração com David Neves e Affonso Beato, realizou o curta-metragem Domingo, um dos filmes pioneiros do movimento.",
+  "<strong>Diretas Já</strong>: Com o fim da ditadura militar, o movimento estudantil voltou às ruas para defender suas bandeiras históricas e a consolidação da democracia no país. Em 1984, a UNE participou ativamente da Campanha das “Diretas Já”, com manifestações e intervenções importantes nos principais comícios populares daquele período. A entidade também apoiou a candidatura de Tancredo Neves à Presidência da República. Em 1985, foi aprovado pelo Congresso Nacional o projeto, de autoria do deputado e ex-presidente da UNE Aldo Arantes, que trazia a entidade de volta para a legalidade."
+],
+"MST": [
+  "<strong>Reforma Agrária Popular</strong>: A Reforma Agrária Popular é a proposta central do MST e defende a redistribuição de terras improdutivas para trabalhadores rurais, com foco na produção sustentável de alimentos, agroecologia, acesso à educação no campo e combate à fome e às desigualdades no Brasil. O objetivo é garantir terra, dignidade e soberania alimentar para o povo.",
+  "<strong>João Pedro Stédile</strong>: Economista e uma das principais lideranças do MST. Atua na articulação política e internacional do movimento, defendendo a reforma agrária e o direito à terra como forma de justiça social.",
+  "<strong>Marina dos Santos</strong>: Dirigente nacional do MST, com forte atuação nas pautas femininas e agroecológicas. Representa a luta das mulheres camponesas dentro do movimento e em espaços internacionais.",
+  "<strong>Gilmar Mauro</strong>: Membro da coordenação nacional do MST, é conhecido por seu trabalho de formação política e articulação com outros movimentos sociais latino-americanos."
+],
+"MNU": [
+  "<strong>Milton Barbosa</strong>: Milton Barbosa, conhecido como “Miltão”, é um dos fundadores do Movimento Negro Unificado (MNU), criado em 1978, e uma das principais lideranças da luta antirracista no Brasil. Nascido em Ribeirão Preto e radicado em São Paulo, Milton atuou ativamente na articulação do movimento negro com outras pautas sociais e estudantis, especialmente durante a ditadura militar.",
+  "<strong>Abdias do Nascimento</strong>: Abdias do Nascimento foi um dos mais importantes intelectuais, ativistas e políticos negros do Brasil no século XX. Fundador do Teatro Experimental do Negro em 1944, buscou valorizar a cultura afro-brasileira e combater o racismo estrutural através da arte e da educação. Também atuou como deputado federal e senador, sendo um dos primeiros parlamentares a denunciar o genocídio da população negra no país. Abdias foi um defensor incansável dos direitos civis, da igualdade racial e da valorização da ancestralidade africana na formação da identidade brasileira",
+  "<strong>Lélia Gonzalez</strong>:Lélia Gonzalez foi uma das mais importantes intelectuais e militantes do Brasil, referência fundamental nos estudos sobre raça, gênero e cultura. Antropóloga, filósofa e professora, foi uma das fundadoras do Movimento Negro Unificado (MNU) em 1978, contribuindo ativamente para a luta contra o racismo e a exclusão social no país. Sua atuação articulava a militância política com a produção acadêmica, sendo pioneira ao evidenciar as especificidades da opressão vivida pelas mulheres negras. Lélia foi também uma das primeiras a propor o conceito de “amefricanidade”, que reconhece a identidade negra latino-americana como resultado das interações entre África, América Latina e Caribe",
+  "<strong>Combate ao racismo estrutural</strong>: Uma pauta central do MNU (Movimento Negro Unificado) é o combate ao racismo estrutural e à desigualdade racial no Brasil. Desde sua fundação em 1978, o MNU denuncia a exclusão sistemática da população negra nos espaços de poder, no acesso à educação, saúde, trabalho e justiça. O movimento defende políticas públicas como cotas raciais, ações afirmativas, valorização da cultura afro-brasileira e reparações históricas. Sua luta é por uma sociedade onde a cor da pele não determine as oportunidades de vida e onde os direitos da população negra sejam plenamente reconhecidos e respeitados."
+],
+"LGBTQIA+": [
+  "<strong>Madame Satã</strong>:Madame Satã, nome artístico de João Francisco dos Santos, foi uma figura icônica da cultura marginal carioca e um símbolo de resistência da população negra e LGBTQIA+ no Brasil do século XX. Nascido em 1900, em Pernambuco, e radicado na Lapa, no Rio de Janeiro, destacou-se como artista transformista, capoeirista e cozinheiro. Enfrentou o preconceito racial, a homofobia e a criminalização da pobreza com ousadia e irreverência, desafiando constantemente os padrões sociais e a repressão policial. Sua trajetória é marcada por episódios de enfrentamento, prisão e fama, tornando-se uma lenda viva da boemia carioca e um ícone da luta por visibilidade e dignidade de grupos historicamente marginalizados.",
+  "<strong>Igualdade de Direitos</strong>: Uma das principais pautas do movimento LGBTQIA+ é a garantia dos direitos civis e da proteção contra a discriminação e a violência. O movimento luta pelo reconhecimento legal da identidade de gênero e da orientação sexual, pelo direito ao casamento igualitário, à adoção por casais homoafetivos, ao uso do nome social, e pelo acesso digno à saúde, educação e trabalho. Também combate a LGBTfobia estrutural presente na sociedade e nas instituições. A pauta busca construir uma sociedade mais inclusiva, onde todas as pessoas possam viver com liberdade, segurança e respeito, independentemente de sua identidade ou expressão de gênero e orientação sexual.",
+  "<strong>Tibira do Maranhão</strong>: Tibira do Maranhão foi um indígena tupinambá que viveu no século XVII e é reconhecido como a primeira vítima documentada de execução por homossexualidade no Brasil. Em 1614, durante o processo de colonização portuguesa e evangelização conduzida por missionários franceses e portugueses, Tibira foi condenado à morte por práticas consideradas “contra a natureza” pela moral cristã da época. Ele foi amarrado a um canhão e executado publicamente em São Luís do Maranhão como forma de intimidação e imposição dos valores europeus sobre os povos originários. Sua história, por muito tempo esquecida, foi resgatada por ativistas e pesquisadores como símbolo da violência histórica contra pessoas LGBTQIA+ no Brasil, representando um marco trágico, mas importante, na luta por memória, justiça e direitos humanos..",
+  "<strong>Erika Hilton</strong>: Erika Hilton é uma ativista dos direitos humanos e política brasileira que se tornou um marco na representatividade LGBTQIA+ ao ser eleita, em 2022, a primeira mulher trans a ocupar uma cadeira na Câmara dos Deputados do Brasil. Nascida em Franca (SP), Erika enfrentou uma trajetória marcada por violência familiar, exclusão social e marginalização, mas transformou sua vivência em força para lutar por justiça social, igualdade de gênero, inclusão e políticas públicas para as populações vulneráveis. Sua atuação política teve início no movimento estudantil e se consolidou como vereadora mais votada da cidade de São Paulo em 2020. Na Câmara Federal, ela tem se destacado pela defesa de pautas progressistas e pelo enfrentamento ao preconceito, sendo uma referência nacional na promoção de direitos das pessoas trans, negras e periféricas."
+]
+};
+
+    const grid = document.getElementById("grid");
+    const gruposCertos = document.getElementById("gruposCertos");
+    const selecionadas = [];
+    let gruposConcluidos = [];
+
+    palavras.sort(() => Math.random() - 0.5);
+    palavras.forEach((palavra, index) => {
+      const div = document.createElement("div");
+      div.className = "word";
+      div.innerText = palavra.texto;
+      div.dataset.index = index;
+      div.onclick = () => toggleSelecao(div, index);
+      grid.appendChild(div);
+    });
+
+    function toggleSelecao(elemento, index) {
+      const i = selecionadas.indexOf(index);
+      if (i > -1) {
+        selecionadas.splice(i, 1);
+        elemento.classList.remove("selected");
+      } else if (selecionadas.length < 4) {
+        selecionadas.push(index);
+        elemento.classList.add("selected");
+      }
+    }
+
+    function verificarGrupo() {
+      if (selecionadas.length !== 4) {
+        alert("Selecione exatamente 4 palavras.");
+        return;
+      }
+      const grupos = selecionadas.map(i => palavras[i].grupo);
+      const mesmoGrupo = grupos.every(g => g === grupos[0]);
+      if (mesmoGrupo) {
+        const grupoNome = grupos[0];
+        gruposConcluidos.push(grupoNome);
+        const quadro = document.createElement("div");
+        quadro.className = "grupo-correto";
+        quadro.innerHTML = `<h3>${grupoNome}</h3>`;
+        selecionadas.forEach(i => {
+          const el = grid.querySelector(`[data-index='${i}']`);
+          if (el) {
+            const copia = el.cloneNode(true);
+            copia.classList.remove("selected");
+            copia.classList.add("correct");
+            quadro.appendChild(copia);
+            el.remove();
+          }
+        });
+        gruposCertos.appendChild(quadro);
+        if (gruposConcluidos.length === 5) {
+          document.body.style.backgroundColor = "#d8b4fe";
+          mostrarExplicacoes();
+        }
+      } else {
+        selecionadas.forEach(i => {
+          const el = grid.querySelector(`[data-index='${i}']`);
+          el.classList.add("incorrect");
+          setTimeout(() => el.classList.remove("incorrect"), 800);
+	  el.classList.remove("selected");
+
+        });
+      }
+      selecionadas.length = 0;
+    }
+
+    function mostrarExplicacoes() {
+      const container = document.getElementById("conteudoExplicacoes");
+      const divExp = document.getElementById("explicacoes");
+      divExp.style.display = "block";
+      gruposConcluidos.forEach(grupo => {
+        const bloco = document.createElement("div");
+        bloco.innerHTML = `<h3>${grupo}</h3><ul>` + explicacoes[grupo].map(l => `<li>${l}</li>`).join("") + "</ul>";
+        container.appendChild(bloco);
+      });
+    }
+  </script>
+</body>
+</html>
